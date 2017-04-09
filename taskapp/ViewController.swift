@@ -87,8 +87,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     }
                 }
 
-        // segue で画面遷移するに呼ばれる
-        override func prepare(for segue: UIStoryboardSegue, sender: Any?){
+    // segue で画面遷移するに呼ばれる
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?){
             let inputViewController:InputViewController = segue.destination as! InputViewController
             
             if segue.identifier == "cellSegue" {
@@ -105,7 +105,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 inputViewController.task = task
             }
         }
+    }
     
+    // 入力画面から戻ってきた時に TableView を更新させる
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
+
     
 
 
