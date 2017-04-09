@@ -7,7 +7,8 @@
 //
 
 import UIKit
-import RealmSwift   // ←追加
+import RealmSwift
+import UserNotifications
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -81,11 +82,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
                 if editingStyle == UITableViewCellEditingStyle.delete {
                     // データベースから削除する  // ←以降追加する
+                    
+                    // 削除されたタスクを取得する
+                                let task = self.taskArray[indexPath.row]
+                    
+                                // ローカル通知をキャンセルする
+                                let center = UNUserNotificationCenter.current()
+                                center.removePendingNotificationRequests(withIdentifiers: [String(task.id)])
+                    
                     try! realm.write {
                         self.realm.delete(self.taskArray[indexPath.row])
                         tableView.deleteRows(at: [indexPath as IndexPath], with: UITableViewRowAnimation.fade)
                     }
-                }
+                    
+                     //未通知のローカル通知一覧をログ出力
+                                center.getPendingNotificationRequests { (requests: [UNNotificationRequest]) in
+                                    for request in requests {
+                                        print("/---------------")
+                                        print(request)
+                                        print("---------------/")
+                                    }
+                    }
+        }
+        
+    }
 
     // segue で画面遷移するに呼ばれる
     override func prepare(for segue: UIStoryboardSegue, sender: Any?){
@@ -104,7 +124,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 
                 inputViewController.task = task
             }
-        }
     }
     
     // 入力画面から戻ってきた時に TableView を更新させる
@@ -112,9 +131,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewWillAppear(animated)
         tableView.reloadData()
     }
-
     
-
 
 }
 
