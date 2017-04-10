@@ -10,10 +10,14 @@ import UIKit
 import RealmSwift
 import UserNotifications
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
     @IBOutlet weak var tableView: UITableView!
+    //検索バー
+    @IBOutlet weak var categorySearchBar: UISearchBar!
     
+    //検索結果配列
+    var searchResult = [String]()
     
     // Realmインスタンスを取得する
     let realm = try! Realm()  // ←追加
@@ -31,6 +35,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         tableView.delegate = self
         tableView.dataSource = self
+        
+        //searchbarのデリゲートの指定デリゲート先を自分に設定する。
+        categorySearchBar.delegate = self
+        //何も入力されていなくてもReturnキーを押せるようにする。
+        categorySearchBar.enablesReturnKeyAutomatically = false
         
     }
 
@@ -131,6 +140,33 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewWillAppear(animated)
         tableView.reloadData()
     }
+    
+    //検索機能の実装
+    //検索ボタン押下時の呼び出しメソッド
+    func categoryBarSearchButtonClicked(searchBar: UISearchBar) {
+        categorySearchBar.endEditing(true)
+        
+        //検索結果配列を空にする。
+        searchResult.removeAll()
+        
+        if(categorySearchBar.text == "") {
+            //検索文字列が空の場合はすべてを表示する。
+            searchResult = taskArray
+        } else {
+            //検索文字列を含むデータを検索結果配列に追加する。
+            for data in taskArray {
+                if data.containsString(categorySearchBar.text!) {
+                    searchResult.append(data)
+                }
+            }
+        }
+        
+        //テーブルを再読み込みする。
+        tableView.reloadData()
+    }
+    
+    
+    
     
 
 }
