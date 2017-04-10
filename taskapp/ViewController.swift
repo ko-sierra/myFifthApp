@@ -16,9 +16,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     //検索バー
     @IBOutlet weak var categorySearchBar: UISearchBar!
     
-    //検索結果配列
-    var searchResult = [String]()
-    
     // Realmインスタンスを取得する
     let realm = try! Realm()  // ←追加
     
@@ -141,27 +138,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.reloadData()
     }
     
+
     //検索機能の実装
-    //検索ボタン押下時の呼び出しメソッド
-    func categoryBarSearchButtonClicked(searchBar: UISearchBar) {
-        categorySearchBar.endEditing(true)
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
-        //検索結果配列を空にする。
-        searchResult.removeAll()
+        var categorySearchResults = realm.objects(Task).filter(categorySearchBar.text!)
         
-        if(categorySearchBar.text == "") {
-            //検索文字列が空の場合はすべてを表示する。
-            searchResult = taskArray
-        } else {
-            //検索文字列を含むデータを検索結果配列に追加する。
-            for data in taskArray {
-                if data.containsString(categorySearchBar.text!) {
-                    searchResult.append(data)
-                }
-            }
-        }
+        taskArray = categorySearchResults
         
-        //テーブルを再読み込みする。
+        //テーブルを再読み込みする
         tableView.reloadData()
     }
     
