@@ -22,8 +22,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     // DB内のタスクが格納されるリスト。
     // 日付近い順\順でソート：降順
     // 以降内容をアップデートするとリスト内は自動的に更新される。
-    let taskArray = try! Realm().objects(Task.self).sorted(byProperty: "date", ascending: false)   // ←追加
-//    後略
+    var taskArray = try! Realm().objects(Task.self).sorted(byProperty: "date", ascending: false)   // ←追加
+
     
     
     override func viewDidLoad() {
@@ -142,9 +142,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     //検索機能の実装
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
-        var categorySearchResults = realm.objects(Task).filter("category beginswith %@", "category")
+//        print(searchBar.text)
         
-        taskArray = categorySearchResults
+        //部分一致CANTAIN[C]
+//        taskArray = realm.objects(Task).filter("category beginswith %@", searchBar.text)
+        
+        //if文で空の時と条件分岐
+        if searchBar.text == nil {
+            taskArray = try! Realm().objects(Task.self).sorted(byProperty: "date", ascending: false)
+        } else {
+            taskArray = realm.objects(Task).filter("category beginswith %@", searchBar.text)
+        }
+        
         
         //テーブルを再読み込みする
         tableView.reloadData()
