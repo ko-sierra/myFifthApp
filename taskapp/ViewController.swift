@@ -142,12 +142,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     //検索機能の実装
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
-        var categorySearchResults = realm.objects(Task).filter(categorySearchBar.text!)
+        var categorySearchResults = realm.objects(Task).filter("category beginswith %@", "category")
         
         taskArray = categorySearchResults
         
         //テーブルを再読み込みする
         tableView.reloadData()
+    
     }
     
     
